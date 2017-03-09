@@ -47,5 +47,19 @@ int main(int argc, char **argv)
 	for(auto& x : adapted.Take(3))
 		std::cout << " # " << x << std::endl;
 	
+	// ### From std::map ###
+	
+	std::cout << "adapted map: " << std::endl;
+
+	auto dummy_map = std::map<int, std::string>{ 
+		std::make_pair(7, "seven"),
+		std::make_pair(49, "forty nine"),
+		std::make_pair(343, "three hundred and three"),
+	};
+	auto adapted_map = Adapt(dummy_map);
+
+	for(auto& x : adapted_map.Take(2))
+		std::cout << " # " << x.first << " -> " << x.second << std::endl;
+	
 	return EXIT_SUCCESS;
 }

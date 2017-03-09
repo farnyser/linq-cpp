@@ -11,13 +11,12 @@ namespace linq
 			{
 			}
 			
-			bool Next(T& n) override
+			std::pair<bool, T> Next() override
 			{
 				if(current == to)
-					return false;
+					return std::make_pair(false, T{});
 				
-				n = ++current;
-				return true;
+				return std::make_pair(true, ++current);
 			};
 				
 			void Init() override 

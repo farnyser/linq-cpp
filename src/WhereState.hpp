@@ -20,17 +20,18 @@ namespace linq
 				source.Init(); 
 			}
 				
-			bool Next(T& current) override
+			std::pair<bool, T> Next() override
 			{ 
-				bool valid = false;
+				while(true) 
+				{ 
+					auto result = source.Next(); 
+					if(result.first && filter(result.second)) 
+						return result; 
+					if(!result.first)
+						break;
+				}
 				
-				do { 
-					valid = source.Next(current); 
-					if(valid && filter(current)) 
-						break; 
-				} while(valid);
-				
-				return valid;
+				return std::make_pair(false, T{});
 			}
 	};
 	

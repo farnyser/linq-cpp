@@ -15,7 +15,7 @@ namespace linq
 		
 			IEnumerable<T>(IState<T>* state) : state(state) {}
 		
-			bool Next(T& t) { return state->Next(t); }
+			std::pair<bool, T> Next() { return state->Next(); }
 			void Init() { state->Init(); }
 		
 			static IEnumerable<T>& Empty()
@@ -27,22 +27,27 @@ namespace linq
 			class iterator : public std::iterator<std::input_iterator_tag, T, T, const T*, T>
 			{
 			private:
-				T current;
+				std::shared_ptr<T> current;
 				IEnumerable<T> source;
 				bool valid { false };
 
 			public:
 				iterator(IEnumerable<T> src) : source(src) {
-					source.Init();
-					valid = source.Next(current);
+					source.Init();		
+					operator++();
 				}
 				iterator() : source(IEnumerable<T>::Empty()), valid(false) {}
 			
 				bool operator==(iterator other) const { return !valid && !other.valid; }
 				bool operator!=(iterator other) const { return !(*this == other); }
-				iterator& operator++() {valid = source.Next(current); return *this;}
+				iterator& operator++() {					
+					auto result = source.Next();
+					valid = result.first;
+					current.reset(new T{result.second}); 
+					return *this;
+				}
 				iterator operator++(int) {iterator retval = *this; ++(*this); return retval;}
-				const T& operator*() const { return current; }
+				const T& operator*() const { return *current; }
 			}; 	
 			
 			iterator begin() { return iterator(*this); }

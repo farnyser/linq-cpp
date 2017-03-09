@@ -13,15 +13,15 @@ namespace linq
 		
 		void Init() override { current = source.begin(); }
 		
-		bool Next(T& out) override 
+		std::pair<bool, T> Next() override 
 		{ 
 			if(current == source.end()) 
-				return false;
+				return std::make_pair(false, T{});
 			
-			out = *current;
+			auto result = std::make_pair(true, *current);
 			++current;
 			
-			return true;
+			return result;
 		}
 	};
 

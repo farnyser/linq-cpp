@@ -22,14 +22,13 @@ namespace linq
 				source.Init(); 
 			}
 				
-			bool Next(T& out) override
-			{ 
-				bool valid = false;
+			std::pair<bool, T> Next() override
+			{
+				if(current >= count)
+					return std::make_pair(false, T{});
 				
-				if(current < count) 
-					valid = source.Next(out), current++; 
-				
-				return valid;
+				current++;
+				return source.Next();
 			}
 	};
 	
