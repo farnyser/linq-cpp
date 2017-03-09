@@ -62,5 +62,6 @@ namespace linq
 #include "WhereState.hpp"
 #include "TakeState.hpp"
 #include "SkipState.hpp"
+#include "AdapterState.hpp"
 
 #endif /* end of include guard: __IENUMERABLE_HPP__ */
