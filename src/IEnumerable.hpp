@@ -52,6 +52,9 @@ namespace linq
 			IEnumerable<T> Where(std::function<bool(const T&)> where);
 			IEnumerable<T> Take(size_t count);
 			IEnumerable<T> Skip(size_t count);
+			
+			T First() { return *begin(); }
+			size_t Count() { size_t count = 0; for(auto& _ : *this) count++; return count; }
 	};	
 }
 
