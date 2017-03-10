@@ -56,18 +56,57 @@ namespace linq
 			static IEnumerable<T> Range(T from, T to);
 			IEnumerable<T> Where(std::function<bool(const T&)> where);
 			IEnumerable<T> Take(size_t count);
+			IEnumerable<T> TakeWhile(const std::function<bool(const T&)>& filter);
 			IEnumerable<T> Skip(size_t count);
+			IEnumerable<T> SkipWhile(const std::function<bool(const T&)>& filter);
 			template <typename F> auto Select(const F& f);
-			
-			T First() { return *begin(); }
-			size_t Count() { size_t count = 0; for(auto& _ : *this) count++; return count; }
-	};	
+			T First();
+			T Last();
+			size_t Count();
+	};
+	
+	template <typename T> 
+	size_t IEnumerable<T>::Count() 
+	{
+		size_t count = 0; 
+		
+		for(auto& _ : *this) 
+			count++; 
+		
+		return count;
+	}
+	
+	template <typename T> 
+	T IEnumerable<T>::First() 
+	{
+		auto it = begin();
+		if(it != end())
+			return *it;
+		
+		throw std::out_of_range("this");
+	}
+	
+	template <typename T> 
+	T IEnumerable<T>::Last() 
+	{
+		auto it = begin();
+		while(it != end()) 
+		{
+			auto result = *it;
+			if(++it == end())
+				return result;
+		}
+		
+		throw std::out_of_range("this");
+	}
 }
 
 #include "RangeState.hpp"
 #include "WhereState.hpp"
 #include "TakeState.hpp"
+#include "TakeWhileState.hpp"
 #include "SkipState.hpp"
+#include "SkipWhileState.hpp"
 #include "AdapterState.hpp"
 #include "SelectState.hpp"
 

@@ -22,20 +22,24 @@ int main(int argc, char **argv)
 
 	dataset = dataset.Skip(3)
 					 .Take(5);
-
+	
 	std::cout << "where/skip/take: " << std::endl;
 	for(auto& x : dataset)
 		std::cout << " # " << x << std::endl;
 
-	// ### First ###
+	// ### First && Last ###
 	
-	std::cout << "first:" << std::endl;
+	std::cout << "first/last:" << std::endl;
 
-	auto datapoint = IEnumerable<int>::Range(0,1000)
+	auto datapoint_first = IEnumerable<int>::Range(0,1000)
 					.Where([](const int& i) { return i % 2 == 0 && i % 5 == 0; })
 					.First();
+	auto datapoint_last = IEnumerable<int>::Range(0,1000)
+					.Where([](const int& i) { return i % 2 == 0 && i % 5 == 0; })
+					.Last();
 
-	std::cout << " # "<< datapoint << std::endl;
+	std::cout << " # "<< datapoint_first << std::endl;
+	std::cout << " # "<< datapoint_last << std::endl;
 	
 	// ### From std::vector ###
 	
@@ -74,6 +78,6 @@ int main(int argc, char **argv)
 
 	for(auto& x : values)
 		std::cout << " # " << x << std::endl;
-
+	
 	return EXIT_SUCCESS;
 }
