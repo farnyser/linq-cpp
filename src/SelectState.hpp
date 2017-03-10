@@ -35,7 +35,8 @@ namespace linq
 	template <typename F>
 	auto IEnumerable<IN>::Select(const F& f)
 	{
-		return IEnumerable<decltype(f(IN{}))>(new SelectState<IN, decltype(f(IN{}))>(*this, f));
+		using OUT = decltype(f(IN{}));
+		return IEnumerable<OUT>(new SelectState<IN, OUT>(*this, f));
 	}
 }
 

@@ -3,15 +3,21 @@
 
 namespace linq
 {
-	template <typename T, typename X>
+	template <typename T, typename INPUT>
 	struct AdapterState : IState<T>
 	{
-		X source;
-		typename X::iterator current;
+		INPUT source;
+		typename INPUT::iterator current;
 		
-		AdapterState(X source) : source(source) {}
+		AdapterState(INPUT source) 
+			: source(source) 
+		{
+		}
 		
-		void Init() override { current = source.begin(); }
+		void Init() override 
+		{ 
+			current = source.begin(); 
+		}
 		
 		std::pair<bool, T> Next() override 
 		{ 
@@ -25,14 +31,11 @@ namespace linq
 		}
 	};
 
-	template <typename X>
-	IEnumerable<typename std::iterator_traits<typename X::iterator>::value_type> Adapt(X source) 
+	template <typename INPUT>
+	auto Adapt(INPUT source) 
 	{
-		IEnumerable<typename std::iterator_traits<typename X::iterator>::value_type> result(
-			new AdapterState<typename std::iterator_traits<typename X::iterator>::value_type, X>(source)
-		);
-		
-		return result;
+		using OUT = typename std::iterator_traits<typename INPUT::iterator>::value_type;
+		return IEnumerable<OUT>(new AdapterState<OUT, INPUT>(source));
 	};
 }
 
