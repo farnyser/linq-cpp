@@ -60,6 +60,20 @@ int main(int argc, char **argv)
 
 	for(auto& x : adapted_map.Take(2))
 		std::cout << " # " << x.first << " -> " << x.second << std::endl;
+
+	// ### Select ###
 	
+	std::cout << "select: " << std::endl;
+
+	auto keys = adapted_map.Select([](auto x){ return x.first; });
+	
+	for(auto& x : keys)
+		std::cout << " # " << x << std::endl;
+
+	auto values = adapted_map.Select([](auto x){ return x.second; });
+
+	for(auto& x : values)
+		std::cout << " # " << x << std::endl;
+
 	return EXIT_SUCCESS;
 }

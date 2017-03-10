@@ -57,6 +57,7 @@ namespace linq
 			IEnumerable<T> Where(std::function<bool(const T&)> where);
 			IEnumerable<T> Take(size_t count);
 			IEnumerable<T> Skip(size_t count);
+			template <typename F> auto Select(const F& f);
 			
 			T First() { return *begin(); }
 			size_t Count() { size_t count = 0; for(auto& _ : *this) count++; return count; }
@@ -68,5 +69,6 @@ namespace linq
 #include "TakeState.hpp"
 #include "SkipState.hpp"
 #include "AdapterState.hpp"
+#include "SelectState.hpp"
 
 #endif /* end of include guard: __IENUMERABLE_HPP__ */
