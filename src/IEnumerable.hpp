@@ -14,6 +14,7 @@ namespace linq
 			std::shared_ptr<IState<T>> state;
 		
 			IEnumerable<T>(IState<T>* state) : state(state) {}
+			IEnumerable<T>(std::shared_ptr<IState<T>> state) : state(state) {}
 		
 			std::pair<bool, T> Next() { return state->Next(); }
 			void Init() { state->Init(); }
@@ -60,6 +61,7 @@ namespace linq
 			IEnumerable<T> Skip(size_t count);
 			IEnumerable<T> SkipWhile(const std::function<bool(const T&)>& filter);
 			template <typename F> auto Select(const F& f);
+			template <typename F> auto GroupBy(const F& f);
 			T First();
 			T Last();
 			size_t Count();
@@ -105,9 +107,10 @@ namespace linq
 #include "WhereState.hpp"
 #include "TakeState.hpp"
 #include "TakeWhileState.hpp"
-#include "SkipState.hpp"
 #include "SkipWhileState.hpp"
+#include "SkipState.hpp"
 #include "AdapterState.hpp"
 #include "SelectState.hpp"
+#include "GroupByState.hpp"
 
 #endif /* end of include guard: __IENUMERABLE_HPP__ */

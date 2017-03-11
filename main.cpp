@@ -27,6 +27,10 @@ int main(int argc, char **argv)
 	for(auto& x : dataset)
 		std::cout << " # " << x << std::endl;
 
+	std::cout << "where/skip/take: " << std::endl;
+	for(auto& x : dataset)
+		std::cout << " # " << x << std::endl;
+
 	// ### First && Last ###
 	
 	std::cout << "first/last:" << std::endl;
@@ -78,6 +82,18 @@ int main(int argc, char **argv)
 
 	for(auto& x : values)
 		std::cout << " # " << x << std::endl;
+	
+	// ### GroupBy ###
+	
+	std::cout << "select: " << std::endl;
+
+	auto grouped = IEnumerable<int>::Range(0, 1000)
+					.Where([](auto x) { return x % 2 == 0; })
+					.Select([](auto x) { return std::to_string(x); })
+					.GroupBy([](auto x) { return x.length(); });
+	
+	for(auto x : grouped)
+		std::cout << " # " << x.Key << " (count: " << x.Count() << ")" << std::endl;
 	
 	return EXIT_SUCCESS;
 }

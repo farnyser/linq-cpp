@@ -9,6 +9,7 @@ Supported operations:
 * Skip, SkipWhile, Take, TakeWhile
 * First, Last
 * Select
+* GroupBy
 * Count
 * Range
 
@@ -19,5 +20,4 @@ Todo:
 * SelectMany
 * Concat
 * Distinct, Union, Intersect, Except
-* GroupBy
 * Any, All, Contains
