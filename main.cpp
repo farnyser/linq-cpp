@@ -10,6 +10,12 @@
 
 using namespace linq;
 
+struct test
+{
+	const std::unique_ptr<int> value;
+	test(int x) : value(new int{x}) {}
+};
+
 int main(int argc, char **argv)
 {
 	// ### Where, Skip, Take ###
@@ -24,11 +30,11 @@ int main(int argc, char **argv)
 					 .Take(5);
 	
 	std::cout << "where/skip/take: " << std::endl;
-	for(auto& x : dataset)
+	for(auto x : dataset)
 		std::cout << " # " << x << std::endl;
 
 	std::cout << "where/skip/take: " << std::endl;
-	for(auto& x : dataset)
+	for(auto x : dataset)
 		std::cout << " # " << x << std::endl;
 
 	// ### First && Last ###
@@ -52,7 +58,7 @@ int main(int argc, char **argv)
 	auto dummy = std::vector<int>{ 7, 7*7, 7*7*7, 7*7*7*7, 7*7*7*7*7, 7*7*7*7*7*7 };
 	auto adapted = Adapt(dummy);
 
-	for(auto& x : adapted.Take(3))
+	for(auto x : adapted.Take(3))
 		std::cout << " # " << x << std::endl;
 	
 	// ### From std::vector (temp object) ###
@@ -75,7 +81,7 @@ int main(int argc, char **argv)
 	};
 	auto adapted_map = Adapt(dummy_map);
 
-	for(auto& x : adapted_map.Take(2))
+	for(auto x : adapted_map.Take(2))
 		std::cout << " # " << x.first << " -> " << x.second << std::endl;
 
 	// ### Select ###
@@ -84,17 +90,17 @@ int main(int argc, char **argv)
 
 	auto keys = adapted_map.Select([](auto x){ return x.first; });
 	
-	for(auto& x : keys)
+	for(auto x : keys)
 		std::cout << " # " << x << std::endl;
 
 	auto values = adapted_map.Select([](auto x){ return x.second; });
 
-	for(auto& x : values)
+	for(auto x : values)
 		std::cout << " # " << x << std::endl;
 	
 	// ### GroupBy ###
 	
-	std::cout << "select: " << std::endl;
+	std::cout << "group by: " << std::endl;
 
 	auto grouped = IEnumerable<int>::Range(0, 1000)
 					.Where([](auto x) { return x % 2 == 0; })
@@ -103,6 +109,16 @@ int main(int argc, char **argv)
 	
 	for(auto x : grouped)
 		std::cout << " # " << x.Key << " (count: " << x.Count() << ")" << std::endl;
-	
+
+	// ### No default constructor
+	/*
+	std::vector<test> tests;
+	tests.emplace_back(5);
+	tests.emplace_back(50);
+	auto source = Adapt(tests);
+	for(auto& x : source)
+		std::cout << " # " << x.value << std::endl;
+
+	*/
 	return EXIT_SUCCESS;
 }

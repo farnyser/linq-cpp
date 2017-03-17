@@ -7,7 +7,9 @@ namespace linq
 	struct IState
 	{
 		virtual void Init() {};
-		virtual std::pair<bool, T> Next() { return std::make_pair(false, T{}); };
+		virtual bool Valid() const noexcept { return false; }
+		virtual void Advance() { throw std::out_of_range("Advance"); };
+		virtual T Current() { throw std::out_of_range("Current"); };
 	};
 }
 

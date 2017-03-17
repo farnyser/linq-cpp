@@ -1,15 +1,16 @@
 #ifndef __TAKEWHILE_STATE_HPP__
 #define __TAKEWHILE_STATE_HPP__
 
+#include "TakeState.hpp"
+
 namespace linq
 {
 	template <typename T>
-	class TakeWhileState : public IState<T>
+	class TakeWhileState : public TakeState<T>
 	{
 		private:
 			IEnumerable<T> source;
 			std::function<bool(const T&)> filter;
-			bool done;
 
 		public:
 			TakeWhileState(IEnumerable<T> source, const std::function<bool(const T&)>& filter) 
@@ -20,17 +21,11 @@ namespace linq
 			void Init() override 
 			{
 				source.Init(); 
-				done = false;
 			}
 				
-			std::pair<bool, T> Next() override
-			{
-				if(done)
-					return std::make_pair(false, T{});
-				
-				auto result = source.Next();
-				done = !filter(result.second);
-				return std::make_pair(result.first && !done, result.second);
+			bool Valid() const noexcept override 
+			{ 
+				return source.Valid() && filter(source.Current()); 
 			}
 	};
 	

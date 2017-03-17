@@ -1,6 +1,8 @@
 #ifndef __ADAPTER_STATE_HPP__
 #define __ADAPTER_STATE_HPP__
 
+#include <utility>
+
 namespace linq
 {
 	template <typename T, typename INPUT>
@@ -9,7 +11,7 @@ namespace linq
 		INPUT source;
 		typename std::remove_reference<INPUT>::type::iterator current;
 		
-		AdapterState(INPUT source) 
+		AdapterState(INPUT&& source) 
 			: source(source) 
 		{
 		}
@@ -18,24 +20,28 @@ namespace linq
 		{ 
 			current = source.begin(); 
 		}
-		
-		std::pair<bool, T> Next() override 
+				
+		bool Valid() const noexcept override 
 		{ 
-			if(current == source.end()) 
-				return std::make_pair(false, T{});
-			
-			auto result = std::make_pair(true, *current);
-			++current;
-			
-			return result;
+			return current != source.end(); 
 		}
+		
+		void Advance() override 
+		{ 
+			++current; 
+		};
+		
+		T Current() override 
+		{ 
+			return *current; 
+		};
 	};
 
 	template <typename INPUT>
 	auto Adapt(INPUT&& source) 
 	{
-		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::value_type;
-		return IEnumerable<OUT>(new AdapterState<OUT, INPUT>(source));
+		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::reference;
+		return IEnumerable<OUT>(new AdapterState<OUT, INPUT>(std::forward<INPUT&&>(source)));
 	};
 }
 

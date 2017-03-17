@@ -22,14 +22,21 @@ namespace linq
 				source.Init(); 
 			}
 				
-			std::pair<bool, T> Next() override
-			{
-				if(current >= count)
-					return std::make_pair(false, T{});
-				
-				current++;
-				return source.Next();
+			bool Valid() const noexcept override 
+			{ 
+				return current < count && source.Valid(); 
 			}
+
+			void Advance() override 
+			{ 
+				source.Advance(); 
+				current++;
+			};
+			
+			T Current() override 
+			{ 
+				return source.Current(); 
+			};
 	};
 	
 	template <typename T>

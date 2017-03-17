@@ -1,10 +1,12 @@
 #ifndef __SKIPWHILE_STATE_HPP__
 #define __SKIPWHILE_STATE_HPP__
 
+#include "SkipState.hpp"
+
 namespace linq
 {
 	template <typename T>
-	class SkipWhileState : public IState<T>
+	class SkipWhileState : public SkipState<T>
 	{
 		private:
 			IEnumerable<T> source;
@@ -21,20 +23,10 @@ namespace linq
 			{
 				source.Init(); 
 				done = false;
-			}
 				
-			std::pair<bool, T> Next() override
-			{
-				while(!done)
-				{
-					auto result = source.Next();
-					done = !filter(result.second);
-					if(done) 
-						return result;
-				}
-				
-				return source.Next();
-			}
+				while(source.Valid() && !filter(source.Current()))
+					source.Advance();
+			}				
 	};
 	
 	template <typename T>

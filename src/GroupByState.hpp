@@ -16,10 +16,10 @@ namespace linq
 	};
 	
 	template <typename KEY, typename VALUE>
-	class GroupByState : public IState<IGrouping<KEY, VALUE>>
+	class GroupByState : public IState<IGrouping<KEY, VALUE&>>
 	{
 		private:
-			using OUT = IGrouping<KEY, VALUE>;
+			using OUT = IGrouping<KEY, VALUE&>;
 			IEnumerable<VALUE> source;
 			std::function<KEY(const VALUE&)> transformer;
 			std::map<KEY, std::vector<VALUE>> result;
@@ -36,29 +36,35 @@ namespace linq
 				source.Init();
 				result.clear();
 				
-				for(auto& x : source)
+				for(const auto& x : source)
 					result[transformer(x)].push_back(x);
 				
 				current = result.begin();
 			}
 			
-			std::pair<bool, OUT> Next() override 
-			{
-				if(current != result.end()) {
-					auto it = current++;
-					return std::make_pair(true, OUT{it->first, Adapt(it->second).state});
-				}
-				
-				return std::make_pair(false, OUT{});
+			bool Valid() const noexcept override 
+			{ 
+				return current != result.end(); 
 			}
+			
+			void Advance() override 
+			{ 
+				++current; 
+			};
+			
+			OUT Current() override 
+			{ 
+				return OUT{current->first, Adapt(current->second).state}; 
+			};
 	};
 
-	template <typename VALUE>
+	template <typename T>
 	template <typename F>
-	auto IEnumerable<VALUE>::GroupBy(const F& f)
+	auto IEnumerable<T>::GroupBy(const F& f)
 	{
+		using VALUE = typename std::remove_reference<T>::type;
 		using KEY = decltype(f(VALUE{}));
-		return IEnumerable<IGrouping<KEY,VALUE>>(new GroupByState<KEY, VALUE>(*this, f));
+		return IEnumerable<IGrouping<KEY,VALUE&>>(new GroupByState<KEY, VALUE>(*this, f));
 	}
 }
 

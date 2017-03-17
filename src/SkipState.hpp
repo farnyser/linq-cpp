@@ -20,15 +20,27 @@ namespace linq
 			{
 				current = 0;
 				source.Init(); 
-			}
 				
-			std::pair<bool, T> Next() override
-			{
-				while(current < count) 
-					source.Next(), current++;
-				
-				return source.Next(); 
+				while(current < count && source.Valid()) {
+					source.Advance();
+					current++;
+				}
 			}
+			
+			bool Valid() const noexcept override 
+			{ 
+				return source.Valid(); 
+			}
+
+			void Advance() override 
+			{ 
+				source.Advance(); 
+			};
+			
+			T Current() override 
+			{ 
+				return source.Current(); 
+			};
 	};
 	
 	template <typename T>

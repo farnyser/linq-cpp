@@ -16,7 +16,9 @@ namespace linq
 			IEnumerable<T>(IState<T>* state) : state(state) {}
 			IEnumerable<T>(std::shared_ptr<IState<T>> state) : state(state) {}
 		
-			std::pair<bool, T> Next() { return state->Next(); }
+			bool Valid() const noexcept { return state->Valid(); }
+			void Advance() { return state->Advance(); }
+			decltype(auto) Current() const { return state->Current(); }
 			void Init() { state->Init(); }
 		
 			static IEnumerable<T>& Empty()
@@ -25,30 +27,28 @@ namespace linq
 				return empty;
 			}
 		
-			class iterator : public std::iterator<std::input_iterator_tag, T, T, const T*, T>
+			class iterator : public std::iterator<std::input_iterator_tag, void, typename std::remove_reference<T>::type, const typename std::remove_reference<T>::type*, T>
 			{
 			private:
-				std::shared_ptr<T> current;
 				IEnumerable<T> source;
 				bool valid { false };
 
 			public:
 				iterator(IEnumerable<T> src) : source(src) {
-					source.Init();		
-					operator++();
+					source.Init();	
+					valid = source.Valid();
 				}
 				iterator() : source(IEnumerable<T>::Empty()), valid(false) {}
 			
 				bool operator==(iterator other) const { return !valid && !other.valid; }
 				bool operator!=(iterator other) const { return !(*this == other); }
 				iterator& operator++() {					
-					auto result = source.Next();
-					valid = result.first;
-					current.reset(new T{result.second}); 
+					source.Advance();
+					valid = source.Valid();
 					return *this;
 				}
 				iterator operator++(int) {iterator retval = *this; ++(*this); return retval;}
-				const T& operator*() const { return *current; }
+				decltype(auto) operator*() const { return source.Current(); }
 			}; 	
 			
 			iterator begin() { return iterator(*this); }
@@ -62,8 +62,8 @@ namespace linq
 			IEnumerable<T> SkipWhile(const std::function<bool(const T&)>& filter);
 			template <typename F> auto Select(const F& f);
 			template <typename F> auto GroupBy(const F& f);
-			T First();
-			T Last();
+			auto First();
+			auto Last();
 			auto Sum();
 			size_t Count();
 	};
@@ -73,7 +73,7 @@ namespace linq
 	{
 		size_t count = 0; 
 		
-		for(auto& _ : *this) 
+		for(const auto& _ : *this) 
 			count++; 
 		
 		return count;
@@ -84,14 +84,14 @@ namespace linq
 	{
 		decltype(T{}+T{}) result{}; 
 		
-		for(auto& _ : *this) 
+		for(const auto& _ : *this) 
 			result += _; 
 		
 		return result;
 	}
 	
 	template <typename T> 
-	T IEnumerable<T>::First() 
+	auto IEnumerable<T>::First() 
 	{
 		auto it = begin();
 		if(it != end())
@@ -101,7 +101,7 @@ namespace linq
 	}
 	
 	template <typename T> 
-	T IEnumerable<T>::Last() 
+	auto IEnumerable<T>::Last() 
 	{
 		auto it = begin();
 		while(it != end()) 

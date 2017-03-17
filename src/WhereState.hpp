@@ -18,21 +18,37 @@ namespace linq
 			void Init() override 
 			{ 
 				source.Init(); 
-			}
 				
-			std::pair<bool, T> Next() override
-			{ 
-				while(true) 
-				{ 
-					auto result = source.Next(); 
-					if(result.first && filter(result.second)) 
-						return result; 
-					if(!result.first)
+				while(source.Valid())
+				{
+					if(filter(source.Current()))
 						break;
+					source.Advance();
 				}
-				
-				return std::make_pair(false, T{});
 			}
+				
+			bool Valid() const noexcept override 
+			{ 
+				return source.Valid(); 
+			}
+
+			void Advance() override 
+			{
+				source.Advance();
+				
+				while(source.Valid())
+				{
+					if(filter(source.Current()))
+						break;
+					
+					source.Advance();
+				}
+			};
+			
+			T Current() override 
+			{ 
+				return source.Current(); 
+			};
 	};
 	
 	template <typename T>
