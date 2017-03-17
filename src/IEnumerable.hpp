@@ -64,6 +64,7 @@ namespace linq
 			template <typename F> auto GroupBy(const F& f);
 			T First();
 			T Last();
+			auto Sum();
 			size_t Count();
 	};
 	
@@ -76,6 +77,17 @@ namespace linq
 			count++; 
 		
 		return count;
+	}	
+	
+	template <typename T> 
+	auto IEnumerable<T>::Sum() 
+	{
+		decltype(T{}+T{}) result{}; 
+		
+		for(auto& _ : *this) 
+			result += _; 
+		
+		return result;
 	}
 	
 	template <typename T> 
