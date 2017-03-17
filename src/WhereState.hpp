@@ -3,15 +3,15 @@
 
 namespace linq
 {
-	template <typename T>
+	template <typename T, typename F>
 	class WhereState : public IState<T>
 	{
 		private:
 			IEnumerable<T> source;
-			std::function<bool(const T&)> filter;
+			F filter;
 
 		public:
-			WhereState(IEnumerable<T> source, std::function<bool(const T&)> filter) : source(source), filter(filter) 
+			WhereState(IEnumerable<T> source, const F& filter) : source(source), filter(filter) 
 			{
 			}
 			
@@ -52,9 +52,10 @@ namespace linq
 	};
 	
 	template <typename T>
-	IEnumerable<T> IEnumerable<T>::Where(std::function<bool(const T&)> where)
+	template <typename F>
+	IEnumerable<T> IEnumerable<T>::Where(const F& where)
 	{
-		return IEnumerable<T>(new WhereState<T>(*this, where));
+		return IEnumerable<T>(new WhereState<T, F>(*this, where));
 	}
 }
 

@@ -55,7 +55,7 @@ namespace linq
 			iterator end() { return iterator(); }
 			
 			static IEnumerable<T> Range(T from, T to);
-			IEnumerable<T> Where(std::function<bool(const T&)> where);
+			template <typename F> IEnumerable<T> Where(const F& where);
 			IEnumerable<T> Take(size_t count);
 			IEnumerable<T> TakeWhile(const std::function<bool(const T&)>& filter);
 			IEnumerable<T> Skip(size_t count);
