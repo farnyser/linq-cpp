@@ -55,6 +55,15 @@ int main(int argc, char **argv)
 	for(auto& x : adapted.Take(3))
 		std::cout << " # " << x << std::endl;
 	
+	// ### From std::vector (temp object) ###
+	
+	std::cout << "adapted temp-vector: " << std::endl;
+
+	auto adapted_temp = Adapt(std::vector<int>{ 7, 7*7, 7*7*7, 7*7*7*7, 7*7*7*7*7, 7*7*7*7*7*7 });
+
+	for(auto& x : adapted_temp.Take(3))
+		std::cout << " # " << x << std::endl;
+	
 	// ### From std::map ###
 	
 	std::cout << "adapted map: " << std::endl;

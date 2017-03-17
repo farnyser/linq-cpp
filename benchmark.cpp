@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	auto x2 = test("take-enumerable", [&](){
 		return Adapt(data)
 				.Take(10000)
-				.Select([](auto x) { return x.map[0]; })
+				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
 	
@@ -54,7 +54,6 @@ int main(int argc, char **argv)
 	
 	x1 = test("where-vector", [&](){
 		int sum = 0;
-		int i = 0;
 		for(auto&x : data) {
 			if(x.map[0] > 5)
 				sum += x.map[0];
@@ -64,8 +63,31 @@ int main(int argc, char **argv)
 	
 	x2 = test("where-enumerable", [&](){
 		return Adapt(data)
-				.Where([](auto x){ return x.map[0] > 5; })
-				.Select([](auto x) { return x.map[0]; })
+				.Where([](const auto& x){ return x.map[0] > 5; })
+				.Select([](const auto& x) { return x.map[0]; })
+				.Sum();
+	});
+	
+	assertEquals(x1, x2);
+	
+	x1 = test("where-take-vector", [&](){
+		int sum = 0;
+		int i = 0;
+		for(auto&x : data) {
+			if(x.map[0] > 5) {
+				sum += x.map[0];
+				if(++i >= 1) 
+					break;
+			}
+		}
+		return sum;
+	});
+	
+	x2 = test("where-take-enumerable", [&](){
+		return Adapt(data)
+				.Where([](const auto& x){ return x.map[0] > 5; })
+				.Take(1)
+				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
 	

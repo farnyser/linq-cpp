@@ -7,7 +7,7 @@ namespace linq
 	struct AdapterState : IState<T>
 	{
 		INPUT source;
-		typename INPUT::iterator current;
+		typename std::remove_reference<INPUT>::type::iterator current;
 		
 		AdapterState(INPUT source) 
 			: source(source) 
@@ -32,9 +32,9 @@ namespace linq
 	};
 
 	template <typename INPUT>
-	auto Adapt(INPUT source) 
+	auto Adapt(INPUT&& source) 
 	{
-		using OUT = typename std::iterator_traits<typename INPUT::iterator>::value_type;
+		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::value_type;
 		return IEnumerable<OUT>(new AdapterState<OUT, INPUT>(source));
 	};
 }
