@@ -3,47 +3,34 @@
 
 namespace linq
 {
-	template <typename T>
+	template <typename S, typename T>
 	class TakeState : public IState<T>
 	{
 		private:
-			IEnumerable<T> source;
+			S source;
 			size_t current;
-			size_t count;
+			const size_t count;
 
 		public:
-			TakeState(IEnumerable<T> source, size_t count) : source(source), count(count) 
-			{
-			}
+			TakeState(S&& source, const size_t count) 
+				: source(source), count(count) { }
 			
-			void Init() override 
+			void Init() override final
 			{
 				current = 0;
 				source.Init(); 
 			}
 				
-			bool Valid() const noexcept override 
-			{ 
-				return current < count && source.Valid(); 
-			}
+			bool Valid() const noexcept override final { return current < count && source.Valid(); }
 
-			void Advance() override 
+			void Advance() override final 
 			{ 
 				source.Advance(); 
 				current++;
 			};
 			
-			T Current() override 
-			{ 
-				return source.Current(); 
-			};
+			T Current() const override final { return source.Current(); };
 	};
-	
-	template <typename T>
-	IEnumerable<T> IEnumerable<T>::Take(size_t count)
-	{
-		return IEnumerable<T>(new TakeState<T>(*this, count));
-	}
 }
 
 #endif /* end of include guard: __TAKE_STATE_HPP__ */

@@ -29,10 +29,10 @@ struct light {
 	}
 };
 
-int main(int argc, char **argv)
+template <typename T> 
+void bench()
 {
-	std::vector<heavy> data(100000);
-	//~ std::vector<light> data(100000);
+	std::vector<T> data(200000);
 	
 	auto x1 = test("take-vector", [&](){
 		int sum = 0;
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
-	
+		
 	assertEquals(x1, x2);
 	
 	x1 = test("where-vector", [&](){
@@ -63,8 +63,8 @@ int main(int argc, char **argv)
 	
 	x2 = test("where-enumerable", [&](){
 		return Adapt(data)
-				.Where([](const auto& x){ return x.map[0] > 5; })
 				.Select([](const auto& x) { return x.map[0]; })
+				.Where([](const auto& x){ return x > 5; })
 				.Sum();
 	});
 	
@@ -90,8 +90,44 @@ int main(int argc, char **argv)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
+		
+	assertEquals(x1, x2);
+		
+	x1 = test("skip-while-take-while-vector", [&](){
+		int sum = 0;
+		bool step = false;
+		for(auto&x : data) {
+			if(!step && x.map[0] < 5)
+				continue;
+			
+			step = true;
+			
+			if(x.map[0] >= 5)
+				sum += x.map[0];
+			else
+				break;
+		}
+		return sum;
+	});
+
+	x2 = test("skip-while-take-while-enumerable", [&](){
+		return Adapt(data)
+				.SkipWhile([](const auto& x){ return x.map[0] < 5; })
+				.TakeWhile([](const auto& x){ return x.map[0] >= 5; })
+				.Select([](const auto& x) { return x.map[0]; })
+				.Sum();
+	});
 	
 	assertEquals(x1, x2);
+}
+
+int main(int argc, char **argv)
+{
+	std::cout << "# Light objects" << std::endl;
+	bench<light>();
+
+	std::cout << "# Heavy objects" << std::endl;
+	bench<heavy>();
 	
 	return EXIT_SUCCESS;
 }

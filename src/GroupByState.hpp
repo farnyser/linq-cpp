@@ -15,18 +15,18 @@ namespace linq
 		IGrouping() : IEnumerable<VALUE>(nullptr) {};
 	};
 	
-	template <typename KEY, typename VALUE>
+	template <typename S, typename KEY, typename VALUE>
 	class GroupByState : public IState<IGrouping<KEY, VALUE&>>
 	{
 		private:
 			using OUT = IGrouping<KEY, VALUE&>;
-			IEnumerable<VALUE> source;
+			S source;
 			std::function<KEY(const VALUE&)> transformer;
 			std::map<KEY, std::vector<VALUE>> result;
 			typename std::map<KEY, std::vector<VALUE>>::iterator current;
 		
 		public:
-			GroupByState(const IEnumerable<VALUE>& in, const std::function<KEY(const VALUE&)>& transformer) 
+			GroupByState(S&& in, const std::function<KEY(const VALUE&)>& transformer) 
 				: source(in), transformer(transformer)
 			{
 			}
@@ -52,20 +52,13 @@ namespace linq
 				++current; 
 			};
 			
-			OUT Current() override 
+			OUT Current() const override 
 			{ 
-				return OUT{current->first, Adapt(current->second).state}; 
+				decltype(auto) adapted = Adapt(current->second);
+				decltype(auto) enumerable = (IEnumerable<VALUE&>)(adapted);
+				return OUT{current->first, enumerable.state}; 
 			};
 	};
-
-	template <typename T>
-	template <typename F>
-	auto IEnumerable<T>::GroupBy(const F& f)
-	{
-		using VALUE = typename std::remove_reference<T>::type;
-		using KEY = decltype(f(VALUE{}));
-		return IEnumerable<IGrouping<KEY,VALUE&>>(new GroupByState<KEY, VALUE>(*this, f));
-	}
 }
 
 #endif /* end of include guard: __GROUPBY_STATE_HPP__ */

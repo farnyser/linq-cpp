@@ -1,39 +1,35 @@
 #ifndef __TAKEWHILE_STATE_HPP__
 #define __TAKEWHILE_STATE_HPP__
 
-#include "TakeState.hpp"
+#include "IState.hpp"
 
 namespace linq
 {
-	template <typename T>
-	class TakeWhileState : public TakeState<T>
+	template <typename S, typename F, typename T>
+	class TakeWhileState : public IState<T>
 	{
 		private:
-			IEnumerable<T> source;
-			std::function<bool(const T&)> filter;
+			S source;
+			F filter;
 
 		public:
-			TakeWhileState(IEnumerable<T> source, const std::function<bool(const T&)>& filter) 
-				: source(source), filter(filter) 
-			{
-			}
+			TakeWhileState(S&& source, const F& filter) 
+				: source(source), filter(filter) { }
 			
-			void Init() override 
-			{
-				source.Init(); 
-			}
+			void Init() override final { source.Init(); }
 				
-			bool Valid() const noexcept override 
+			bool Valid() const noexcept override final
 			{ 
 				return source.Valid() && filter(source.Current()); 
 			}
+			
+			void Advance() override final
+			{
+				source.Advance();
+			}
+			
+			T Current() const override final { return source.Current(); }
 	};
-	
-	template <typename T>
-	IEnumerable<T> IEnumerable<T>::TakeWhile(const std::function<bool(const T&)>& filter)
-	{
-		return IEnumerable<T>(new TakeWhileState<T>(*this, filter));
-	}
 }
 
 #endif /* end of include guard: __TAKEWHILE_STATE_HPP__ */

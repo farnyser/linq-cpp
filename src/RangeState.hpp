@@ -26,7 +26,7 @@ namespace linq
 				++current; 
 			};
 			
-			T Current() override 
+			T Current() const override 
 			{ 
 				return current; 
 			};

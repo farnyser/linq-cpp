@@ -2,49 +2,40 @@
 #define __SELECT_STATE_HPP__
 
 namespace linq
-{
-	template <typename IN, typename OUT>
-	class SelectState : public IState<OUT>
+{	
+	template <typename S, typename F, typename T>
+	class SelectState : public IState<T>
 	{
 		private:
-			IEnumerable<IN> source;
-			std::function<OUT(const typename std::remove_reference<IN>::type&)> transformer;
+			S source;
+			F transformer;
 		
 		public:
-			SelectState(const IEnumerable<IN>& in, const std::function<OUT(const typename std::remove_reference<IN>::type&)>& transformer) 
+			SelectState(S&& in, const F& transformer) 
 				: source(in), transformer(transformer)
 			{
 			}
 		
-			void Init() override 
+			void Init() override final
 			{
 				source.Init();
 			}
 			
-			bool Valid() const noexcept override 
+			bool Valid() const noexcept override final
 			{ 
 				return source.Valid(); 
 			}
 
-			void Advance() override 
+			void Advance() override final
 			{ 
 				source.Advance(); 
 			};
 			
-			OUT Current() override 
+			T Current() const override final
 			{ 
 				return transformer(source.Current()); 
 			};
 	};
-
-	template <typename IN>
-	template <typename F>
-	auto IEnumerable<IN>::Select(const F& f)
-	{
-		using VALUE_IN = typename std::remove_reference<IN>::type;
-		using OUT = decltype(f(VALUE_IN{}));
-		return IEnumerable<OUT>(new SelectState<IN, OUT>(*this, f));
-	}
 }
 
 #endif /* end of include guard: __SELECT_STATE_HPP__ */

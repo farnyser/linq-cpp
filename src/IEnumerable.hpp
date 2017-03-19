@@ -4,9 +4,17 @@
 #include <memory>
 #include <algorithm>
 #include "IState.hpp"
+#include "TakeState.hpp"
+#include "TakeWhileState.hpp"
+#include "SkipState.hpp"
+#include "SkipWhileState.hpp"
+#include "WhereState.hpp"
+#include "SelectState.hpp"
 
 namespace linq 
 {
+	template <typename T> struct IEnumerableCore;
+	
 	template <typename T>
 	class IEnumerable
 	{
@@ -55,74 +63,23 @@ namespace linq
 			iterator end() { return iterator(); }
 			
 			static IEnumerable<T> Range(T from, T to);
-			template <typename F> IEnumerable<T> Where(const F& where);
-			IEnumerable<T> Take(size_t count);
-			IEnumerable<T> TakeWhile(const std::function<bool(const T&)>& filter);
-			IEnumerable<T> Skip(size_t count);
-			IEnumerable<T> SkipWhile(const std::function<bool(const T&)>& filter);
+			template <typename F> IEnumerableCore<WhereState<IEnumerable<T>, F, T>> Where(const F& where);
+			IEnumerableCore<TakeState<IEnumerable<T>, T>> Take(size_t count);
+			template <typename F> IEnumerableCore<TakeWhileState<IEnumerable<T>, F, T>> TakeWhile(const F& f);
+			IEnumerableCore<SkipState<IEnumerable<T>, T>> Skip(size_t count);
+			template <typename F> IEnumerableCore<SkipWhileState<IEnumerable<T>, F, T>> SkipWhile(const F& f);
 			template <typename F> auto Select(const F& f);
 			template <typename F> auto GroupBy(const F& f);
-			auto First();
-			auto Last();
+			T First();
+			T Last();
 			auto Sum();
 			size_t Count();
 	};
-	
-	template <typename T> 
-	size_t IEnumerable<T>::Count() 
-	{
-		size_t count = 0; 
-		
-		for(const auto& _ : *this) 
-			count++; 
-		
-		return count;
-	}	
-	
-	template <typename T> 
-	auto IEnumerable<T>::Sum() 
-	{
-		decltype(T{}+T{}) result{}; 
-		
-		for(const auto& _ : *this) 
-			result += _; 
-		
-		return result;
-	}
-	
-	template <typename T> 
-	auto IEnumerable<T>::First() 
-	{
-		auto it = begin();
-		if(it != end())
-			return *it;
-		
-		throw std::out_of_range("this");
-	}
-	
-	template <typename T> 
-	auto IEnumerable<T>::Last() 
-	{
-		auto it = begin();
-		while(it != end()) 
-		{
-			auto result = *it;
-			if(++it == end())
-				return result;
-		}
-		
-		throw std::out_of_range("this");
-	}
 }
 
 #include "RangeState.hpp"
-#include "WhereState.hpp"
-#include "TakeState.hpp"
-#include "TakeWhileState.hpp"
-#include "SkipWhileState.hpp"
-#include "SkipState.hpp"
 #include "AdapterState.hpp"
-#include "SelectState.hpp"
 #include "GroupByState.hpp"
+#include "IEnumerableCore.hpp"
 
 #endif /* end of include guard: __IENUMERABLE_HPP__ */

@@ -22,12 +22,13 @@ int main(int argc, char **argv)
 	
 	auto dataset = IEnumerable<int>::Range(0,1000)
 					.Where([](const int& i) { return i % 2 == 0; })
-					.Where([](const int& i) { return i % 3 == 0; });
+					.Where([](const int& i) { return i % 3 == 0; })
+					.ToEnumerable();
 					
 	std::cout << "where/count => " << dataset.Count() << std::endl;
-
+	
 	dataset = dataset.Skip(3)
-					 .Take(5);
+					 .TakeWhile([](auto x){ return x <= 30; });
 	
 	std::cout << "where/skip/take: " << std::endl;
 	for(auto x : dataset)
@@ -99,7 +100,7 @@ int main(int argc, char **argv)
 		std::cout << " # " << x << std::endl;
 	
 	// ### GroupBy ###
-	
+		
 	std::cout << "group by: " << std::endl;
 
 	auto grouped = IEnumerable<int>::Range(0, 1000)
@@ -109,7 +110,8 @@ int main(int argc, char **argv)
 	
 	for(auto x : grouped)
 		std::cout << " # " << x.Key << " (count: " << x.Count() << ")" << std::endl;
-
+	
+	
 	// ### No default constructor
 	/*
 	std::vector<test> tests;

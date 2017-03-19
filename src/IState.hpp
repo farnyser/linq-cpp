@@ -9,7 +9,10 @@ namespace linq
 		virtual void Init() {};
 		virtual bool Valid() const noexcept { return false; }
 		virtual void Advance() { throw std::out_of_range("Advance"); };
-		virtual T Current() { throw std::out_of_range("Current"); };
+		virtual T Current() const { throw std::out_of_range("Current"); };
+		
+		IState* operator->() { return this; }
+		const IState* operator->() const { return this; }
 	};
 }
 

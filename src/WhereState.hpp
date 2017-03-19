@@ -2,61 +2,46 @@
 #define __WHERE_STATE_HPP__
 
 namespace linq
-{
-	template <typename T, typename F>
+{	
+	template <typename S, typename F, typename T>
 	class WhereState : public IState<T>
 	{
 		private:
-			IEnumerable<T> source;
+			S source;
 			F filter;
 
 		public:
-			WhereState(IEnumerable<T> source, const F& filter) : source(source), filter(filter) 
+			WhereState(S&& source, const F& filter) 
+				: source(source), filter(filter) 
 			{
 			}
 			
-			void Init() override 
+			void Init() final override 
 			{ 
 				source.Init(); 
 				
-				while(source.Valid())
-				{
-					if(filter(source.Current()))
-						break;
+				while(source.Valid() && !filter(source.Current()))
 					source.Advance();
-				}
 			}
 				
-			bool Valid() const noexcept override 
+			bool Valid() const noexcept final override 
 			{ 
 				return source.Valid(); 
 			}
 
-			void Advance() override 
+			void Advance() final override 
 			{
 				source.Advance();
-				
-				while(source.Valid())
-				{
-					if(filter(source.Current()))
-						break;
-					
+
+				while(source.Valid() && !filter(source.Current()))
 					source.Advance();
-				}
 			};
 			
-			T Current() override 
+			T Current() const final override 
 			{ 
 				return source.Current(); 
 			};
 	};
-	
-	template <typename T>
-	template <typename F>
-	IEnumerable<T> IEnumerable<T>::Where(const F& where)
-	{
-		return IEnumerable<T>(new WhereState<T, F>(*this, where));
-	}
 }
 
 #endif /* end of include guard: __WHERE_STATE_HPP__ */
