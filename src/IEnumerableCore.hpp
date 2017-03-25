@@ -10,7 +10,7 @@ namespace linq
 	template <typename S>
 	struct IEnumerableCore
 	{
-		mutable S source;
+		S source;
 
 		IEnumerableCore(S&& source) 
 			: source(source) 
@@ -103,6 +103,7 @@ namespace linq
 		
 		auto Sum() 
 		{
+			using V = typename std::remove_reference<T>::type;
 			decltype(T{}+T{}) result{}; 
 			
 			for(const auto& _ : *this) 
@@ -144,6 +145,7 @@ namespace linq
 		}
 
 		operator IEnumerable<T>() { return IEnumerable<T>(new S(source)); }
+		operator const IEnumerable<T>() const { return IEnumerable<T>(new S(source)); }
 		IEnumerable<T> ToEnumerable() { return IEnumerable<T>(new S(source)); } 
 	};
 

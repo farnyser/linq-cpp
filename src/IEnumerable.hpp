@@ -61,6 +61,8 @@ namespace linq
 			
 			iterator begin() { return iterator(*this); }
 			iterator end() { return iterator(); }
+			iterator begin() const { return iterator(*this); }
+			iterator end() const { return iterator(); }
 			
 			static IEnumerable<T> Range(T from, T to);
 			template <typename F> IEnumerableCore<WhereState<IEnumerable<T>, F, T>> Where(const F& where);

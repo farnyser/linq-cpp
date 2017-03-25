@@ -16,22 +16,22 @@ namespace linq
 		{
 		}
 		
-		void Init() override 
+		void Init() override final
 		{ 
 			current = source.begin(); 
 		}
 				
-		bool Valid() const noexcept override 
+		bool Valid() const noexcept override final
 		{ 
 			return current != source.end(); 
 		}
 		
-		void Advance() override 
+		void Advance() override final
 		{ 
 			++current; 
 		};
 		
-		T Current() const override 
+		T Current() const override final
 		{ 
 			return *current; 
 		};

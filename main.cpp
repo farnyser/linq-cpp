@@ -16,6 +16,13 @@ struct test
 	test(int x) : value(new int{x}) {}
 };
 
+template <typename T>
+void dump(const IEnumerable<T>& dataset) 
+{
+	for(const auto& x : dataset)
+		std::cout << " # " << x << std::endl;
+}
+
 int main(int argc, char **argv)
 {
 	// ### Where, Skip, Take ###
@@ -96,8 +103,7 @@ int main(int argc, char **argv)
 
 	auto values = adapted_map.Select([](auto x){ return x.second; });
 
-	for(auto x : values)
-		std::cout << " # " << x << std::endl;
+	dump(values.ToEnumerable());
 	
 	// ### GroupBy ###
 		
