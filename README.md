@@ -7,7 +7,7 @@ Supported operations:
 
 * Where
 * Skip, SkipWhile, Take, TakeWhile
-* First, Last
+* First, Last, Single
 * Select
 * GroupBy
 * Count
@@ -15,7 +15,6 @@ Supported operations:
 
 Todo:
 
-* Single
 * Sum, Min, Max
 * SelectMany
 * Concat

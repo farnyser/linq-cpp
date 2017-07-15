@@ -10,6 +10,9 @@
 #include "SkipWhileState.hpp"
 #include "WhereState.hpp"
 #include "SelectState.hpp"
+#include "ElementAccessor/Single.hpp"
+#include "ElementAccessor/First.hpp"
+#include "ElementAccessor/Last.hpp"
 
 namespace linq 
 {
@@ -21,6 +24,7 @@ namespace linq
 		public:
 			std::shared_ptr<IState<T>> state;
 		
+			IEnumerable<T>() : state() {}
 			IEnumerable<T>(IState<T>* state) : state(state) {}
 			IEnumerable<T>(std::shared_ptr<IState<T>> state) : state(state) {}
 		
@@ -72,10 +76,15 @@ namespace linq
 			template <typename F> IEnumerableCore<SkipWhileState<IEnumerable<T>, F, T>> SkipWhile(const F& f);
 			template <typename F> auto Select(const F& f);
 			template <typename F> auto GroupBy(const F& f);
-			T First();
-			T Last();
 			auto Sum();
 			size_t Count();
+
+			auto Single() { return linq::Single(std::move(*this)); }
+			auto Single(const auto& where) { return linq::Single(std::move(Where(where))); }
+			auto First() { return linq::First(std::move(*this)); }
+			auto First(const auto& where) { return linq::First(std::move(Where(where))); }
+			auto Last() { return linq::Last(std::move(*this)); }
+			auto Last(const auto& where) { return linq::Last(std::move(Where(where))); }
 	};
 }
 

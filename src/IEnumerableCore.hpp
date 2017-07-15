@@ -3,6 +3,9 @@
 
 #include <memory>
 #include <algorithm>
+#include "ElementAccessor/Single.hpp"
+#include "ElementAccessor/First.hpp"
+#include "ElementAccessor/Last.hpp"
 #include "IState.hpp"
 
 namespace linq 
@@ -104,7 +107,7 @@ namespace linq
 		auto Sum() 
 		{
 			using V = typename std::remove_reference<T>::type;
-			decltype(T{}+T{}) result{}; 
+			decltype(V{}+V{}) result{};
 			
 			for(const auto& _ : *this) 
 				result += _; 
@@ -121,28 +124,13 @@ namespace linq
 			
 			return count;
 		}
-		
-		decltype(auto) First() 
-		{
-			auto it = begin();
-			if(it != end())
-				return *it;
-			
-			throw std::out_of_range("this");
-		}
-		
-		decltype(auto) Last() 
-		{
-			auto it = begin();
-			while(it != end()) 
-			{
-				auto result = *it;
-				if(++it == end())
-					return result;
-			}
-			
-			throw std::out_of_range("this");
-		}
+
+		auto Single() { return linq::Single(std::move(source)); }
+		auto Single(const auto& where) { return linq::Single(std::move(Where(where))); }
+		auto First() { return linq::First(std::move(*this)); }
+		auto First(const auto& where) { return linq::First(std::move(Where(where))); }
+		auto Last() { return linq::Last(std::move(*this)); }
+		auto Last(const auto& where) { return linq::Last(std::move(Where(where))); }
 
 		operator IEnumerable<T>() { return IEnumerable<T>(new S(source)); }
 		operator const IEnumerable<T>() const { return IEnumerable<T>(new S(source)); }
@@ -154,12 +142,6 @@ namespace linq
 	
 	template <typename T>
 	auto IEnumerable<T>::Sum() { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Sum(); }
-	
-	template <typename T>
-	T IEnumerable<T>::First() { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).First(); }
-	
-	template <typename T>
-	T IEnumerable<T>::Last() { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Last(); }
 
 	template <typename T>
 	IEnumerableCore<TakeState<IEnumerable<T>, T>> IEnumerable<T>::Take(size_t count) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Take(count); }
