@@ -71,7 +71,7 @@ void bench()
 	x1 = test("max-where-vector", [&](){
 		int max = -1;
 		for(int i = 0; i < data.size(); i++) {
-			if(data[i].map[0] > max && data[i].map[0] % 2 == 0)
+			if(data[i].map[0] > max)
 				max = data[i].map[0];
 		}
 		return max;
@@ -79,8 +79,8 @@ void bench()
 
 	x2 = test("max-where-enumerable", [&](){
 		return AdaptView(data)
-				.Select([](const auto& x) { return x.map[0]; })
-				.Max([](const auto x) { return x % 2 == 0; });
+				.Max([](const auto&  x) { return x.map[0]; })
+				.map[0];
 	});
 
 	assertEquals(x1, x2);
