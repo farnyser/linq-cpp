@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <algorithm>
+#include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
 #include "ElementAccessor/Last.hpp"
@@ -104,17 +105,6 @@ namespace linq
 		{
 			return IEnumerableCore<WhereState<S, F, T>>(WhereState<S, F, T>(std::move(source), f));
 		}
-		
-		auto Sum() 
-		{
-			using V = typename std::remove_reference<T>::type;
-			decltype(V{}+V{}) result{};
-			
-			for(const auto& _ : *this) 
-				result += _; 
-			
-			return result;
-		}
 
 		size_t Count() 
 		{
@@ -131,12 +121,14 @@ namespace linq
 		auto Last()   { return linq::Last(std::move(*this)); }
 		auto Min()    { return linq::Min(std::move(*this), [](const auto& x) { return x; }); }
 		auto Max()    { return linq::Max(std::move(*this), [](const auto& x) { return x; }); }
+		auto Sum()    { return linq::Sum(std::move(*this), [](const auto& x) { return x; }); }
 
-		template <typename F> auto Single(const F& where)     { return linq::Single(std::move(Where(where))); }
-		template <typename F> auto First (const F& where)     { return linq::First(std::move(Where(where))); }
-		template <typename F> auto Last  (const F& where)     { return linq::Last(std::move(Where(where))); }
-		template <typename F> auto Min   (const F& transform) { return linq::Min(std::move(*this), transform); }
-		template <typename F> auto Max   (const F& transform) { return linq::Max(std::move(*this), transform); }
+		template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
+		template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
+		template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
+		template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(*this), transform); }
+		template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(*this), transform); }
+		template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(*this), transform); }
 
 		operator IEnumerable<T>() { return IEnumerable<T>(new S(source)); }
 		operator const IEnumerable<T>() const { return IEnumerable<T>(new S(source)); }
@@ -145,9 +137,6 @@ namespace linq
 
 	template <typename T>
 	size_t IEnumerable<T>::Count() { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Count(); }
-	
-	template <typename T>
-	auto IEnumerable<T>::Sum() { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Sum(); }
 
 	template <typename T>
 	IEnumerableCore<TakeState<IEnumerable<T>, T>> IEnumerable<T>::Take(size_t count) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Take(count); }

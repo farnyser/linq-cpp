@@ -10,6 +10,7 @@
 #include "SkipWhileState.hpp"
 #include "WhereState.hpp"
 #include "SelectState.hpp"
+#include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
 #include "ElementAccessor/Last.hpp"
@@ -77,7 +78,6 @@ namespace linq
 			template <typename F> IEnumerableCore<SkipWhileState<IEnumerable<T>, F, T>> SkipWhile(const F& f);
 			template <typename F> auto Select(const F& f);
 			template <typename F> auto GroupBy(const F& f);
-			auto Sum();
 			size_t Count();
 
 			auto Single() { return linq::Single(std::move(*this)); }
@@ -85,12 +85,14 @@ namespace linq
 			auto Last()   { return linq::Last(std::move(*this)); }
 			auto Min()    { return linq::Min(std::move(*this), [](const auto& x) { return x; }); }
 			auto Max()    { return linq::Max(std::move(*this), [](const auto& x) { return x; }); }
+			auto Sum()    { return linq::Sum(std::move(*this), [](const auto& x) { return x; }); }
 
-			template <typename F> auto Single(const F& where) { return linq::Single(std::move(Where(where))); }
-			template <typename F> auto First(const F& where) { return linq::First(std::move(Where(where))); }
-			template <typename F> auto Last(const F& where) { return linq::Last(std::move(Where(where))); }
-			template <typename F> auto Min   (const F& transform) { return linq::Min(std::move(*this), transform); }
-			template <typename F> auto Max   (const F& transform) { return linq::Max(std::move(*this), transform); }
+			template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
+			template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
+			template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
+			template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(*this), transform); }
+			template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(*this), transform); }
+			template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(*this), transform); }
 	};
 }
 
