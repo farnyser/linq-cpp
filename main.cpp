@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	std::cout << "adapted vector: " << std::endl;
 
 	auto dummy = std::vector<int>{ 7, 7*7, 7*7*7, 7*7*7*7, 7*7*7*7*7, 7*7*7*7*7*7 };
-	auto adapted = Adapt(dummy);
+	auto adapted = AdaptView(dummy);
 
 	for(auto x : adapted.Take(3))
 		std::cout << " # " << x << std::endl;
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		std::make_pair(49, "forty nine"),
 		std::make_pair(343, "three hundred and three"),
 	};
-	auto adapted_map = Adapt(dummy_map);
+	auto adapted_map = AdaptView(dummy_map);
 
 	for(auto x : adapted_map.Take(2))
 		std::cout << " # " << x.first << " -> " << x.second << std::endl;

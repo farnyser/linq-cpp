@@ -54,7 +54,7 @@ namespace linq
 			
 			OUT Current() const override 
 			{ 
-				decltype(auto) adapted = Adapt(current->second);
+				decltype(auto) adapted = AdaptView(current->second);
 				decltype(auto) enumerable = (IEnumerable<VALUE&>)(adapted);
 				return OUT{current->first, enumerable.state}; 
 			};

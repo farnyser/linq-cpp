@@ -37,11 +37,25 @@ namespace linq
 		};
 	};
 	
-	template <typename INPUT>
+	template <typename INPUT, class = typename std::enable_if<!std::is_lvalue_reference<INPUT>::value>::type>
 	auto Adapt(INPUT&& source) 
 	{
 		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::reference;
 		return IEnumerableCore<AdapterState<OUT, INPUT>>(AdapterState<OUT, INPUT>(std::forward<INPUT&&>(source)));
+	};
+
+	template <typename INPUT>
+	auto AdaptView(INPUT&& source)
+	{
+		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::reference;
+		return IEnumerableCore<AdapterState<OUT, INPUT>>(AdapterState<OUT, INPUT>(std::forward<INPUT&&>(source)));
+	};
+
+	template <typename INPUT>
+	auto AdaptCopy(INPUT& source)
+	{
+		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::reference;
+		return IEnumerableCore<AdapterState<OUT, INPUT&>>(AdapterState<OUT, INPUT &>(source));
 	};
 }
 

@@ -44,7 +44,7 @@ void bench()
 	});
 	
 	auto x2 = test("take-enumerable", [&](){
-		return Adapt(data)
+		return AdaptView(data)
 				.Take(10000)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
@@ -62,7 +62,7 @@ void bench()
 	});
 	
 	x2 = test("where-enumerable", [&](){
-		return Adapt(data)
+		return AdaptView(data)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Where([](const auto& x){ return x > 5; })
 				.Sum();
@@ -84,7 +84,7 @@ void bench()
 	});
 	
 	x2 = test("where-take-enumerable", [&](){
-		return Adapt(data)
+		return AdaptView(data)
 				.Where([](const auto& x){ return x.map[0] > 5; })
 				.Take(1)
 				.Select([](const auto& x) { return x.map[0]; })
@@ -111,7 +111,7 @@ void bench()
 	});
 
 	x2 = test("skip-while-take-while-enumerable", [&](){
-		return Adapt(data)
+		return AdaptView(data)
 				.SkipWhile([](const auto& x){ return x.map[0] < 5; })
 				.TakeWhile([](const auto& x){ return x.map[0] >= 5; })
 				.Select([](const auto& x) { return x.map[0]; })
