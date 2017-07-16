@@ -36,7 +36,6 @@ void bench()
 	
 	auto x1 = test("take-vector", [&](){
 		int sum = 0;
-		int i = 0;
 		for(int i = 0; i < 10000; i++) {
 			sum += data[i].map[0];
 		}
@@ -51,7 +50,41 @@ void bench()
 	});
 		
 	assertEquals(x1, x2);
-	
+
+	x1 = test("min-vector", [&](){
+		int min = data[0].map[0];
+		for(int i = 0; i < data.size(); i++) {
+			if(data[i].map[0] < min)
+				min = data[i].map[0];
+		}
+		return min;
+	});
+
+	x2 = test("min-enumerable", [&](){
+		return AdaptView(data)
+				.Select([](const auto& x) { return x.map[0]; })
+				.Min();
+	});
+
+	assertEquals(x1, x2);
+
+	x1 = test("max-where-vector", [&](){
+		int max = -1;
+		for(int i = 0; i < data.size(); i++) {
+			if(data[i].map[0] > max && data[i].map[0] % 2 == 0)
+				max = data[i].map[0];
+		}
+		return max;
+	});
+
+	x2 = test("max-where-enumerable", [&](){
+		return AdaptView(data)
+				.Select([](const auto& x) { return x.map[0]; })
+				.Max([](const auto x) { return x % 2 == 0; });
+	});
+
+	assertEquals(x1, x2);
+
 	x1 = test("where-vector", [&](){
 		int sum = 0;
 		for(auto&x : data) {

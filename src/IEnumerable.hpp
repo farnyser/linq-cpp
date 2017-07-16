@@ -13,6 +13,7 @@
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
 #include "ElementAccessor/Last.hpp"
+#include "ElementAccessor/MinMax.hpp"
 
 namespace linq 
 {
@@ -80,11 +81,16 @@ namespace linq
 			size_t Count();
 
 			auto Single() { return linq::Single(std::move(*this)); }
-			auto Single(const auto& where) { return linq::Single(std::move(Where(where))); }
-			auto First() { return linq::First(std::move(*this)); }
-			auto First(const auto& where) { return linq::First(std::move(Where(where))); }
-			auto Last() { return linq::Last(std::move(*this)); }
-			auto Last(const auto& where) { return linq::Last(std::move(Where(where))); }
+			auto First()  { return linq::First(std::move(*this)); }
+			auto Last()   { return linq::Last(std::move(*this)); }
+			auto Min()    { return linq::Min(std::move(*this), [](const auto& x) { return x; }); }
+			auto Max()    { return linq::Max(std::move(*this), [](const auto& x) { return x; }); }
+
+			template <typename F> auto Single(const F& where) { return linq::Single(std::move(Where(where))); }
+			template <typename F> auto First(const F& where) { return linq::First(std::move(Where(where))); }
+			template <typename F> auto Last(const F& where) { return linq::Last(std::move(Where(where))); }
+			template <typename F> auto Min   (const F& transform) { return linq::Min(std::move(*this), transform); }
+			template <typename F> auto Max   (const F& transform) { return linq::Max(std::move(*this), transform); }
 	};
 }
 
