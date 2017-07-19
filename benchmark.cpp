@@ -41,18 +41,22 @@ void bench()
 		}
 		return sum;
 	});
-	
+
 	auto x2 = test("take-enumerable", [&](){
 		return AdaptView(data)
 				.Take(10000)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
-		
+
 	assertEquals(x1, x2);
 
-	x1 = test("min-vector", [&](){
+	x1 = test("min-2-vector", [&](){
 		int min = data[0].map[0];
+		for(int i = 0; i < data.size(); i++) {
+			if(data[i].map[0] < min)
+				min = data[i].map[0];
+		}
 		for(int i = 0; i < data.size(); i++) {
 			if(data[i].map[0] < min)
 				min = data[i].map[0];
@@ -60,8 +64,9 @@ void bench()
 		return min;
 	});
 
-	x2 = test("min-enumerable", [&](){
+	x2 = test("min-2-enumerable", [&](){
 		return AdaptView(data)
+				.Concat(AdaptView(data))
 				.Select([](const auto& x) { return x.map[0]; })
 				.Min();
 	});
@@ -93,29 +98,29 @@ void bench()
 		}
 		return sum;
 	});
-	
+
 	x2 = test("where-enumerable", [&](){
 		return AdaptView(data)
 				.Select([](const auto& x) { return x.map[0]; })
 				.Where([](const auto& x){ return x > 5; })
 				.Sum();
 	});
-	
+
 	assertEquals(x1, x2);
-	
+
 	x1 = test("where-take-vector", [&](){
 		int sum = 0;
 		int i = 0;
 		for(auto&x : data) {
 			if(x.map[0] > 5) {
 				sum += x.map[0];
-				if(++i >= 1) 
+				if(++i >= 1)
 					break;
 			}
 		}
 		return sum;
 	});
-	
+
 	x2 = test("where-take-enumerable", [&](){
 		return AdaptView(data)
 				.Where([](const auto& x){ return x.map[0] > 5; })
@@ -123,18 +128,18 @@ void bench()
 				.Select([](const auto& x) { return x.map[0]; })
 				.Sum();
 	});
-		
+
 	assertEquals(x1, x2);
-		
+
 	x1 = test("skip-while-take-while-vector", [&](){
 		int sum = 0;
 		bool step = false;
 		for(auto&x : data) {
 			if(!step && x.map[0] < 5)
 				continue;
-			
+
 			step = true;
-			
+
 			if(x.map[0] >= 5)
 				sum += x.map[0];
 			else
@@ -147,10 +152,34 @@ void bench()
 		return AdaptView(data)
 				.SkipWhile([](const auto& x){ return x.map[0] < 5; })
 				.TakeWhile([](const auto& x){ return x.map[0] >= 5; })
-				.Select([](const auto& x) { return x.map[0]; })
-				.Sum();
+				.Sum([](const auto& x) { return x.map[0]; });
 	});
-	
+
+	assertEquals(x1, x2);
+
+	x1 = test("concat-mod2-mod5-sum-vector", [&](){
+		int sum = 0;
+		for(auto&x : data) {
+			if(x.map[0] % 2 != 0)
+				continue;
+
+			sum += x.map[0];
+		}
+		for(auto&x : data) {
+			if(x.map[0] % 5 != 0)
+				continue;
+
+			sum += x.map[0];
+		}
+		return sum;
+	});
+
+	x2 = test("concat-mod2-mod5-sum-enumerable", [&](){
+		return AdaptView(data).Where([](const auto& x){ return x.map[0] % 2 == 0; })
+				.Concat(AdaptView(data).Where([](const auto& x){ return x.map[0] % 5 == 0; }))
+				.Sum([](const auto& x) { return x.map[0]; });
+	});
+
 	assertEquals(x1, x2);
 }
 
@@ -161,6 +190,6 @@ int main(int argc, char **argv)
 
 	std::cout << "# Heavy objects" << std::endl;
 	bench<heavy>();
-	
+
 	return EXIT_SUCCESS;
 }

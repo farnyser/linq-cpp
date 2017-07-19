@@ -21,7 +21,7 @@ namespace linq
 	template <typename T> struct IEnumerableCore;
 	
 	template <typename T>
-	class IEnumerable
+	class IEnumerable : public IState<T>
 	{
 		public:
 			std::shared_ptr<IState<T>> state;
@@ -30,10 +30,10 @@ namespace linq
 			IEnumerable<T>(IState<T>* state) : state(state) {}
 			IEnumerable<T>(std::shared_ptr<IState<T>> state) : state(state) {}
 		
-			bool Valid() const noexcept { return state->Valid(); }
-			void Advance() { return state->Advance(); }
-			decltype(auto) Current() const { return state->Current(); }
-			void Init() { state->Init(); }
+			bool Valid() const noexcept override final { return state->Valid(); }
+			void Advance() override final { return state->Advance(); }
+			T Current() const override final { return state->Current(); }
+			void Init() override final { state->Init(); }
 		
 			static IEnumerable<T>& Empty()
 			{
@@ -77,6 +77,7 @@ namespace linq
 			IEnumerableCore<SkipState<IEnumerable<T>, T>> Skip(size_t count);
 			template <typename F> IEnumerableCore<SkipWhileState<IEnumerable<T>, F, T>> SkipWhile(const F& f);
 			template <typename F> auto Select(const F& f);
+			template <typename S2> auto Concat(S2&& s);
 			template <typename F> auto GroupBy(const F& f);
 			size_t Count();
 

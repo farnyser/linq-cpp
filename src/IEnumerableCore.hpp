@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <algorithm>
+#include "SetBuilder/Concat.hpp"
 #include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
@@ -84,14 +85,21 @@ namespace linq
 			return IEnumerableCore<SkipWhileState<S, F, T>>(SkipWhileState<S, F, T>(std::move(source), f));
 		}
 
-		template <typename F> 
+		template <typename F>
 		decltype(auto) Select(const F& f)
 		{
 			using VALUE_IN = typename std::remove_reference<T>::type;
 			using OUT = decltype(f(VALUE_IN{}));
 			return IEnumerableCore<SelectState<S, F, OUT>>(SelectState<S, F, OUT>(std::move(source), f));
 		}
-		
+
+		template <typename E>
+		auto Concat(E&& other)
+		{
+			using S2 = decltype(other.source);
+			return IEnumerableCore<ConcatState<S, S2, T>>(ConcatState<S, S2, T>(std::move(source), std::move(other.source)));
+		}
+
 		template <typename F> 
 		auto GroupBy(const F& f)  
 		{ 
@@ -117,18 +125,18 @@ namespace linq
 		}
 
 		auto Single() { return linq::Single(std::move(source)); }
-		auto First()  { return linq::First(std::move(*this)); }
-		auto Last()   { return linq::Last(std::move(*this)); }
-		auto Min()    { return linq::Min(std::move(*this), [](const auto& x) { return x; }); }
-		auto Max()    { return linq::Max(std::move(*this), [](const auto& x) { return x; }); }
-		auto Sum()    { return linq::Sum(std::move(*this), [](const auto& x) { return x; }); }
+		auto First()  { return linq::First(std::move(source)); }
+		auto Last()   { return linq::Last(std::move(source)); }
+		auto Min()    { return linq::Min(std::move(source), [](const auto& x) { return x; }); }
+		auto Max()    { return linq::Max(std::move(source), [](const auto& x) { return x; }); }
+		auto Sum()    { return linq::Sum(std::move(source), [](const auto& x) { return x; }); }
 
 		template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
 		template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
 		template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
-		template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(*this), transform); }
-		template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(*this), transform); }
-		template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(*this), transform); }
+		template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(source), transform); }
+		template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(source), transform); }
+		template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(source), transform); }
 
 		operator IEnumerable<T>() { return IEnumerable<T>(new S(source)); }
 		operator const IEnumerable<T>() const { return IEnumerable<T>(new S(source)); }
@@ -168,6 +176,11 @@ namespace linq
 	template <typename T>
 	template <typename F>
 	auto IEnumerable<T>::Select(const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Select(f); }
+
+
+	template <typename T>
+	template <typename S2>
+	auto IEnumerable<T>::Concat(S2&& other) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Concat(other); }
 }
 
 #endif /* end of include guard: __IENUMERABLE_CORE_HPP__ */

@@ -10,7 +10,8 @@ namespace linq
 	{
 		INPUT source;
 		typename std::remove_reference<INPUT>::type::iterator current;
-		
+		typename std::remove_reference<INPUT>::type::iterator end;
+
 		AdapterState(INPUT&& source) 
 			: source(source) 
 		{
@@ -18,12 +19,13 @@ namespace linq
 		
 		void Init() override final
 		{ 
-			current = source.begin(); 
+			current = source.begin();
+			end = source.end();
 		}
 				
 		bool Valid() const noexcept override final
 		{ 
-			return current != source.end(); 
+			return current != end;
 		}
 		
 		void Advance() override final
