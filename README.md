@@ -26,11 +26,12 @@ Supported operations
 * Skip, SkipWhile, Take, TakeWhile
 * First, Last, Single, Min, Max
 * Count, Sum
-* Concat
+* Concat, Union, Distinct
 
 What's next
 ------------
 
 * SelectMany
-* Distinct, Union, Intersect, Except
+* Intersect, Except
 * Any, All, Contains
+* OrderBy, OrderByDescending

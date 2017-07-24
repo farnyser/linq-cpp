@@ -43,7 +43,7 @@ namespace linq
 	auto Adapt(INPUT&& source) 
 	{
 		using OUT = typename std::iterator_traits<typename std::remove_reference<INPUT>::type::iterator>::reference;
-		return IEnumerableCore<AdapterState<OUT, INPUT>>(AdapterState<OUT, INPUT>(std::forward<INPUT&&>(source)));
+		return IEnumerableCore<AdapterState<OUT, INPUT>>(AdapterState<OUT, INPUT>(std::move(source)));
 	};
 
 	template <typename INPUT>

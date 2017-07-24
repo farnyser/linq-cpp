@@ -10,7 +10,7 @@ namespace linq
 		if(!source.Valid())
 			throw std::out_of_range("this");
 
-		decltype(source.Current()) result = source.Current();
+		auto result = source.Current();
 		auto result_score = fct(result);
 
 		while(true)
@@ -33,7 +33,7 @@ namespace linq
 		if(!source.Valid())
 			throw std::out_of_range("this");
 
-		decltype(source.Current()) result = source.Current();
+		auto result = source.Current();
 		auto result_score = fct(result);
 
 		while(true)

@@ -195,6 +195,13 @@ namespace linq
 	
 	template <typename T>
 	template <typename F>
+	auto IEnumerable<T>::GroupBy(const F& f)
+	{
+		return IEnumerableCore<IEnumerable<T>>(std::move(*this)).GroupBy(f);
+	}
+
+	template <typename T>
+	template <typename F>
 	auto IEnumerable<T>::Select(const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Select(f); }
 
 	template <typename T>
