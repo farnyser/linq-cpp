@@ -116,7 +116,17 @@ int main(int argc, char **argv)
 	
 	for(auto x : grouped)
 		std::cout << " # " << x.Key << " (count: " << x.Count() << ")" << std::endl;
-	
+
+	// ### Set ###
+
+	std::cout << "distinct: " << std::endl;
+
+	auto mod7 = IEnumerable<int>::Range(0, 1000)
+					.Distinct([](auto x) { return x % 7; });
+
+	for(auto x : mod7)
+		std::cout << " # " << x << std::endl;
+
 	
 	// ### No default constructor
 	/*

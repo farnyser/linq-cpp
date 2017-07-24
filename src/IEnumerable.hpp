@@ -15,6 +15,7 @@
 #include "ElementAccessor/First.hpp"
 #include "ElementAccessor/Last.hpp"
 #include "ElementAccessor/MinMax.hpp"
+#include "SetBuilder/Distinct.hpp"
 
 namespace linq 
 {
@@ -79,6 +80,8 @@ namespace linq
 			template <typename F> auto Select(const F& f);
 			template <typename S2> auto Concat(S2&& s);
 			template <typename F> auto GroupBy(const F& f);
+			template <typename F> auto Distinct(const F& f);
+			auto Distinct();
 			size_t Count();
 
 			auto Single() { return linq::Single(std::move(*this)); }

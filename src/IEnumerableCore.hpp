@@ -4,6 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include "SetBuilder/Concat.hpp"
+#include "SetBuilder/Distinct.hpp"
 #include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
@@ -114,6 +115,19 @@ namespace linq
 			return IEnumerableCore<WhereState<S, F, T>>(WhereState<S, F, T>(std::move(source), f));
 		}
 
+		template <typename F>
+		decltype(auto) Distinct(const F& f)
+		{
+			return IEnumerableCore<DistinctState<S, F, T>>(DistinctState<S, F, T>(std::move(source), f));
+		}
+
+		decltype(auto) Distinct()
+		{
+			auto f = [](T x) { return x; };
+			using F = decltype(f);
+			return IEnumerableCore<DistinctState<S, F, T>>(DistinctState<S, F, T>(std::move(source), f));
+		}
+
 		size_t Count() 
 		{
 			size_t count = 0; 
@@ -177,6 +191,20 @@ namespace linq
 	template <typename F>
 	auto IEnumerable<T>::Select(const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Select(f); }
 
+	template <typename T>
+	template <typename F>
+	auto IEnumerable<T>::Distinct(const F& f)
+	{
+		return IEnumerableCore<DistinctState<IEnumerable<T>, F, T>>(DistinctState<IEnumerable<T>, F, T>(std::move(*this), f));
+	};
+
+	template <typename T>
+	auto IEnumerable<T>::Distinct()
+	{
+		auto f = [](T x) { return x; };
+		using F = decltype(f);
+		return IEnumerableCore<DistinctState<IEnumerable<T>, F, T>>(DistinctState<IEnumerable<T>, F, T>(std::move(*this), f));
+	};
 
 	template <typename T>
 	template <typename S2>
