@@ -82,6 +82,7 @@ namespace linq
 			template <typename F> auto GroupBy(const F& f);
 			template <typename F> auto Distinct(const F& f);
 			auto Distinct();
+			template<typename S> auto Union(S&& other);
 			size_t Count();
 
 			auto Single() { return linq::Single(std::move(*this)); }

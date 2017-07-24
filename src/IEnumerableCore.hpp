@@ -94,11 +94,17 @@ namespace linq
 			return IEnumerableCore<SelectState<S, F, OUT>>(SelectState<S, F, OUT>(std::move(source), f));
 		}
 
-		template <typename E>
-		auto Concat(E&& other)
+		template <typename O>
+		auto Concat(O&& other)
 		{
-			using S2 = decltype(other.source);
-			return IEnumerableCore<ConcatState<S, S2, T>>(ConcatState<S, S2, T>(std::move(source), std::move(other.source)));
+			using S2 = typename std::remove_reference<O>::type;
+			return IEnumerableCore<ConcatState<S, S2, T>>(ConcatState<S, S2, T>(std::move(source), std::move(other)));
+		}
+
+		template <typename E>
+		auto Union(E&& other)
+		{
+			return Concat(std::move(other)).Distinct();
 		}
 
 		template <typename F> 
@@ -204,6 +210,13 @@ namespace linq
 		auto f = [](T x) { return x; };
 		using F = decltype(f);
 		return IEnumerableCore<DistinctState<IEnumerable<T>, F, T>>(DistinctState<IEnumerable<T>, F, T>(std::move(*this), f));
+	};
+
+	template <typename T>
+	template <typename S>
+	auto IEnumerable<T>::Union(S&& other)
+	{
+		return Concat(other).Distinct();
 	};
 
 	template <typename T>

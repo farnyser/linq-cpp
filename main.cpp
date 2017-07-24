@@ -119,15 +119,27 @@ int main(int argc, char **argv)
 
 	// ### Set ###
 
-	std::cout << "distinct: " << std::endl;
+	std::cout << "(mod 3) union (mod 7): " << std::endl;
 
 	auto mod7 = IEnumerable<int>::Range(0, 1000)
-					.Distinct([](auto x) { return x % 7; });
+					.Select([](auto x) { return x % 7; });
+	auto mod3 = IEnumerable<int>::Range(0, 1000)
+					.Select([](auto x) { return x % 3; });
+	auto unio = mod3.Union(mod7);
 
-	for(auto x : mod7)
+	for(auto x : unio)
 		std::cout << " # " << x << std::endl;
 
-	
+	std::cout << "(3-7) union (11-15): " << std::endl;
+
+	auto r3_7 = IEnumerable<int>::Range(3, 7);
+	auto r11_15 = IEnumerable<int>::Range(11, 15);
+	auto unio2 = r3_7.Union(r11_15);
+
+	for(auto x : unio2)
+		std::cout << " # " << x << std::endl;
+
+
 	// ### No default constructor
 	/*
 	std::vector<test> tests;
