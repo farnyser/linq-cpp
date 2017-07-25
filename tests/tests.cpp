@@ -23,6 +23,10 @@ void test(S source)
 	assertEquals( 6, source.GroupBy([](int x){ return x < 5; }).First().Count());
 	assertEquals( 2, source.GroupBy([](int x){ return x < 5; }).Last().Count());
 	assertEquals( 5, source.Single([](int x){ return x == 5; }));
+	assertEquals( 5, Adapt(std::vector<int>{1,5,6,7,5}).Intersect(source).Min());
+	assertEquals( 7, Adapt(std::vector<int>{1,5,6,7,5}).Intersect(source).Max());
+	assertEquals( 3, Adapt(std::vector<int>{1,5,6,7,5}).Intersect(source).Count());
+	assertEquals( 3, source.Intersect(Adapt(std::vector<int>{1,5,6,7,5})).Count());
 }
 
 int main()

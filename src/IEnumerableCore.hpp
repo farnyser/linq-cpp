@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "SetBuilder/Concat.hpp"
 #include "SetBuilder/Distinct.hpp"
+#include "SetBuilder/Intersect.hpp"
 #include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
@@ -99,6 +100,32 @@ namespace linq
 		{
 			using S2 = typename std::remove_reference<O>::type;
 			return IEnumerableCore<ConcatState<S, S2, T>>(ConcatState<S, S2, T>(std::move(source), std::move(other)));
+		}
+
+		template <typename O, class = typename std::enable_if<std::is_same<T, decltype(O{}.Current())>::value>::type>
+		auto Intersect(O&& other)
+		{
+			using S2 = typename std::remove_reference<O>::type;
+			auto f = [](T x) { return x; };
+			using F = decltype(f);
+			return IEnumerableCore<IntersectState<S, S2, F, T>>(IntersectState<S, S2, F, T>(std::move(source), std::move(other), f));
+		}
+
+		template <typename O>
+		auto Intersect(O&& other)
+		{
+			using S2 = typename std::remove_reference<O>::type;
+			using TS = typename std::remove_reference<T>::type;
+			auto f = [](TS x) { return x; };
+			using F = decltype(f);
+			return IEnumerableCore<IntersectState<S, S2, F, TS>>(IntersectState<S, S2, F, TS>(std::move(source), std::move(other), f));
+		}
+
+		template <typename O, typename F>
+		auto Intersect(O&& other, const F& f)
+		{
+			using S2 = typename std::remove_reference<O>::type;
+			return IEnumerableCore<IntersectState<S, S2, F, T>>(IntersectState<S, S2, F, T>(std::move(source), std::move(other), f));
 		}
 
 		template <typename E>
@@ -229,6 +256,14 @@ namespace linq
 	template <typename T>
 	template <typename S2>
 	auto IEnumerable<T>::Concat(S2&& other) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Concat(other); }
+
+	template <typename T>
+	template <typename S2>
+	auto IEnumerable<T>::Intersect(S2&& other) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Intersect(other); }
+
+	template <typename T>
+	template <typename S2, typename F>
+	auto IEnumerable<T>::Intersect(S2&& other, const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Intersect(other, f); }
 }
 
 #endif /* end of include guard: __IENUMERABLE_CORE_HPP__ */
