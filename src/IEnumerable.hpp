@@ -84,6 +84,8 @@ namespace linq
 			auto Distinct();
 			template <typename S2, typename F> auto Intersect(S2&& s, const F& f);
 			template <typename S2> auto Intersect(S2&& s);
+			template <typename S2, typename F> auto Except(S2&& s, const F& f);
+			template <typename S2> auto Except(S2&& s);
 			template<typename S> auto Union(S&& other);
 			size_t Count();
 

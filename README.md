@@ -20,18 +20,16 @@ Supported operations
 --------------------
 
 * Range
-* Where
+* Where, Skip, SkipWhile, Take, TakeWhile
 * Select
 * GroupBy
-* Skip, SkipWhile, Take, TakeWhile
 * First, Last, Single, Min, Max
 * Count, Sum
-* Concat, Union, Distinct, Intersect
+* Concat, Union, Distinct, Intersect, Except
 
 What's next
 ------------
 
-* Except
 * SelectMany
 * Any, All, Contains
 * OrderBy, OrderByDescending

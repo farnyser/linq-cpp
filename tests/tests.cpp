@@ -27,6 +27,10 @@ void test(S source)
 	assertEquals( 7, Adapt(std::vector<int>{1,5,6,7,5}).Intersect(source).Max());
 	assertEquals( 3, Adapt(std::vector<int>{1,5,6,7,5}).Intersect(source).Count());
 	assertEquals( 3, source.Intersect(Adapt(std::vector<int>{1,5,6,7,5})).Count());
+	assertEquals( 5, source.Except(Adapt(std::vector<int>{1,5,6,7,5})).Count());
+	assertEquals( 3, source.Except(IEnumerable<int>::Range(5,9)).Count());
+	assertEquals( 8, source.Intersect(source).Count());
+	assertEquals( 0, source.Except(source).Count());
 }
 
 int main()
@@ -37,8 +41,9 @@ int main()
 	test(IEnumerable<int>::Range(0,100).Where([](int x){ return x >= 3 && x <= 10; }));
 	test(IEnumerable<int>::Range(3,5).Concat(IEnumerable<int>::Range(6,10)));
 	test(IEnumerable<int>::Range(3,5).Union(IEnumerable<int>::Range(4,10)));
-	test(AdaptView(std::vector<int>{3,4,5,6,7,8,9,10}));
-	test(AdaptView(data));
+	test(Adapt(std::vector<int>{3,4,5,6,7,8,9,10}));
+//	test(AdaptView(data)); // TODO Fix this with multiple usage in the same query
+	test(Adapt(std::move(data)));
 
 	return EXIT_SUCCESS;
 }

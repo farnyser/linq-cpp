@@ -6,6 +6,7 @@
 #include "SetBuilder/Concat.hpp"
 #include "SetBuilder/Distinct.hpp"
 #include "SetBuilder/Intersect.hpp"
+#include "SetBuilder/Except.hpp"
 #include "Accumulator/Sum.hpp"
 #include "ElementAccessor/Single.hpp"
 #include "ElementAccessor/First.hpp"
@@ -126,6 +127,23 @@ namespace linq
 		{
 			using S2 = typename std::remove_reference<O>::type;
 			return IEnumerableCore<IntersectState<S, S2, F, T>>(IntersectState<S, S2, F, T>(std::move(source), std::move(other), f));
+		}
+
+		template <typename O>
+		auto Except(O&& other)
+		{
+			using S2 = typename std::remove_reference<O>::type;
+			using TS = typename std::remove_reference<T>::type;
+			auto f = [](TS x) { return x; };
+			using F = decltype(f);
+			return IEnumerableCore<ExceptState<S, S2, F, TS>>(ExceptState<S, S2, F, TS>(std::move(source), std::move(other), f));
+		}
+
+		template <typename O, typename F>
+		auto Except(O&& other, const F& f)
+		{
+			using S2 = typename std::remove_reference<O>::type;
+			return IEnumerableCore<ExceptState<S, S2, F, T>>(ExceptState<S, S2, F, T>(std::move(source), std::move(other), f));
 		}
 
 		template <typename E>
@@ -264,6 +282,14 @@ namespace linq
 	template <typename T>
 	template <typename S2, typename F>
 	auto IEnumerable<T>::Intersect(S2&& other, const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Intersect(other, f); }
+
+	template <typename T>
+	template <typename S2>
+	auto IEnumerable<T>::Except(S2&& other) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Except(other); }
+
+	template <typename T>
+	template <typename S2, typename F>
+	auto IEnumerable<T>::Except(S2&& other, const F& f) { return IEnumerableCore<IEnumerable<T>>(std::move(*this)).Except(other, f); }
 }
 
 #endif /* end of include guard: __IENUMERABLE_CORE_HPP__ */
