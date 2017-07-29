@@ -189,6 +189,7 @@ namespace linq
 			return count;
 		}
 
+		auto Any()    { return linq::Any(std::move(source)); }
 		auto Single() { return linq::Single(std::move(source)); }
 		auto First()  { return linq::First(std::move(source)); }
 		auto Last()   { return linq::Last(std::move(source)); }
@@ -196,6 +197,7 @@ namespace linq
 		auto Max()    { return linq::Max(std::move(source), [](const auto& x) { return x; }); }
 		auto Sum()    { return linq::Sum(std::move(source), [](const auto& x) { return x; }); }
 
+		template <typename F> auto Any    (const F& where)     { return linq::Any(std::move(Where(where))); }
 		template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
 		template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
 		template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
