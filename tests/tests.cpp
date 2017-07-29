@@ -37,6 +37,8 @@ void test(S source)
 	assertEquals(false, source.All([](int x) { return x > 9; }));
 	assertEquals(false, source.Any([](int x) { return x > 10; }));
 	assertEquals( true, source.All([](int x) { return x <= 10; }));
+	assertEquals( true, source.Contains(6));
+	assertEquals(false, source.Contains(16));
 }
 
 int main()
@@ -48,7 +50,7 @@ int main()
 	test(IEnumerable<int>::Range(3,5).Concat(IEnumerable<int>::Range(6,10)));
 	test(IEnumerable<int>::Range(3,5).Union(IEnumerable<int>::Range(4,10)));
 	test(Adapt(std::vector<int>{3,4,5,6,7,8,9,10}));
-	test(AdaptView(data)); 
+	test(AdaptView(data));
 	test(Adapt(std::move(data)));
 
 	return EXIT_SUCCESS;

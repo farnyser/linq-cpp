@@ -26,10 +26,11 @@ Supported operations
 * First, Last, Single, Min, Max
 * Count, Sum
 * Concat, Union, Distinct, Intersect, Except
+* Any, All, Contains
 
 What's next
 ------------
 
 * SelectMany
-* Any, All, Contains
 * OrderBy, OrderByDescending
+* ToMap

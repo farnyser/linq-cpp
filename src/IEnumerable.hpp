@@ -18,6 +18,7 @@
 #include "SetBuilder/Distinct.hpp"
 #include "Logic/Any.hpp"
 #include "Logic/All.hpp"
+#include "Logic/Contains.hpp"
 
 namespace linq 
 {
@@ -100,14 +101,15 @@ namespace linq
 			auto Max()    { return linq::Max(std::move(*this), [](const auto& x) { return x; }); }
 			auto Sum()    { return linq::Sum(std::move(*this), [](const auto& x) { return x; }); }
 
-			template <typename F> bool Any    (const F& where)     { return linq::Any(std::move(Where(where))); }
-			template <typename F> bool All    (const F& where)     { return linq::All(std::move(*this), where); }
-			template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
-			template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
-			template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
-			template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(*this), transform); }
-			template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(*this), transform); }
-			template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(*this), transform); }
+			template <typename F> bool Any      (const F& where)     { return linq::Any(std::move(Where(where))); }
+			template <typename F> bool All      (const F& where)     { return linq::All(std::move(*this), where); }
+			template <typename I> bool Contains (const I& item)      { return linq::Contains(std::move(*this), item); }
+			template <typename F> auto Single   (const F& where)     { return linq::Single(std::move(Where(where))); }
+			template <typename F> auto First    (const F& where)     { return linq::First(std::move(Where(where))); }
+			template <typename F> auto Last     (const F& where)     { return linq::Last(std::move(Where(where))); }
+			template <typename F> auto Min      (const F& transform) { return linq::Min(std::move(*this), transform); }
+			template <typename F> auto Max      (const F& transform) { return linq::Max(std::move(*this), transform); }
+			template <typename F> auto Sum      (const F& transform) { return linq::Sum(std::move(*this), transform); }
 	};
 }
 

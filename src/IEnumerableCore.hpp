@@ -198,14 +198,15 @@ namespace linq
 		auto Max()    { return linq::Max(std::move(source), [](const auto& x) { return x; }); }
 		auto Sum()    { return linq::Sum(std::move(source), [](const auto& x) { return x; }); }
 
-		template <typename F> auto Any    (const F& where)     { return linq::Any(std::move(Where(where))); }
-		template <typename F> auto All    (const F& where)     { return linq::All(std::move(source), where); }
-		template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
-		template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
-		template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }
-		template <typename F> auto Min    (const F& transform) { return linq::Min(std::move(source), transform); }
-		template <typename F> auto Max    (const F& transform) { return linq::Max(std::move(source), transform); }
-		template <typename F> auto Sum    (const F& transform) { return linq::Sum(std::move(source), transform); }
+		template <typename F> auto Any      (const F& where)     { return linq::Any(std::move(Where(where))); }
+		template <typename F> auto All      (const F& where)     { return linq::All(std::move(source), where); }
+		template <typename I> auto Contains (const I& item)      { return linq::Contains(std::move(source), item); }
+		template <typename F> auto Single   (const F& where)     { return linq::Single(std::move(Where(where))); }
+		template <typename F> auto First    (const F& where)     { return linq::First(std::move(Where(where))); }
+		template <typename F> auto Last     (const F& where)     { return linq::Last(std::move(Where(where))); }
+		template <typename F> auto Min      (const F& transform) { return linq::Min(std::move(source), transform); }
+		template <typename F> auto Max      (const F& transform) { return linq::Max(std::move(source), transform); }
+		template <typename F> auto Sum      (const F& transform) { return linq::Sum(std::move(source), transform); }
 
 		operator IEnumerable<T>() { return IEnumerable<T>(new S(source)); }
 		operator const IEnumerable<T>() const { return IEnumerable<T>(new S(source)); }
