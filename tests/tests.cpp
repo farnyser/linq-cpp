@@ -32,8 +32,11 @@ void test(S source)
 	assertEquals(    8, source.Intersect(source).Count());
 	assertEquals(    0, source.Except(source).Count());
 	assertEquals( true, source.Any());
+	assertEquals( true, source.All());
 	assertEquals( true, source.Any([](int x) { return x > 9; }));
+	assertEquals(false, source.All([](int x) { return x > 9; }));
 	assertEquals(false, source.Any([](int x) { return x > 10; }));
+	assertEquals( true, source.All([](int x) { return x <= 10; }));
 }
 
 int main()
@@ -45,7 +48,7 @@ int main()
 	test(IEnumerable<int>::Range(3,5).Concat(IEnumerable<int>::Range(6,10)));
 	test(IEnumerable<int>::Range(3,5).Union(IEnumerable<int>::Range(4,10)));
 	test(Adapt(std::vector<int>{3,4,5,6,7,8,9,10}));
-//	test(AdaptView(data)); // TODO Fix this with multiple usage in the same query
+	test(AdaptView(data)); 
 	test(Adapt(std::move(data)));
 
 	return EXIT_SUCCESS;

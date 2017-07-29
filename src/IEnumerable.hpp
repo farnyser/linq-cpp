@@ -17,6 +17,7 @@
 #include "ElementAccessor/MinMax.hpp"
 #include "SetBuilder/Distinct.hpp"
 #include "Logic/Any.hpp"
+#include "Logic/All.hpp"
 
 namespace linq 
 {
@@ -91,6 +92,7 @@ namespace linq
 			size_t Count();
 
 			bool Any()    { return linq::Any(std::move(*this)); }
+			bool All()    { return linq::All(std::move(*this)); }
 			auto Single() { return linq::Single(std::move(*this)); }
 			auto First()  { return linq::First(std::move(*this)); }
 			auto Last()   { return linq::Last(std::move(*this)); }
@@ -99,6 +101,7 @@ namespace linq
 			auto Sum()    { return linq::Sum(std::move(*this), [](const auto& x) { return x; }); }
 
 			template <typename F> bool Any    (const F& where)     { return linq::Any(std::move(Where(where))); }
+			template <typename F> bool All    (const F& where)     { return linq::All(std::move(*this), where); }
 			template <typename F> auto Single (const F& where)     { return linq::Single(std::move(Where(where))); }
 			template <typename F> auto First  (const F& where)     { return linq::First(std::move(Where(where))); }
 			template <typename F> auto Last   (const F& where)     { return linq::Last(std::move(Where(where))); }

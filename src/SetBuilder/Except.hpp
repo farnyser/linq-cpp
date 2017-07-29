@@ -23,7 +23,7 @@ namespace linq
 			for(source2.Init() ; source2.Valid() ; source2.Advance())
 				filter.insert(transformer(source2.Current()));
 			for(source1.Init() ; source1.Valid() ; source1.Advance())
-				if(filter.find(transformer(source2.Current())) == filter.end())
+				if(filter.find(transformer(source1.Current())) == filter.end())
 					break;
 		}
 
